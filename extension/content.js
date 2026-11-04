@@ -11,7 +11,7 @@
   style.textContent = ':host{all:initial}section{font:14px Arial,sans-serif;color:#17202a;background:#fff;width:330px;padding:18px;border:2px solid #2463b4;border-radius:10px;box-shadow:0 6px 30px #0005}h2{font-size:18px;margin:0 0 12px}p{line-height:1.45}label{display:block;margin:10px 0}input,select,button{font:inherit;padding:7px}input{width:90px}button{margin:5px 6px 5px 0;cursor:pointer}small{display:block;line-height:1.4}output{display:block;white-space:pre-wrap;margin-top:12px;line-height:1.5}';
   const panel = node('section', undefined, root);
   node('h2', 'Disclosure History Exporter', panel);
-  node('small', 'v0.1.2 - local processing; no uploads', panel);
+  node('small', 'v0.1.3 - local processing; no uploads', panel);
   const ml = node('label', 'Month: ', panel), month = node('select', undefined, ml);
   ['January','February','March','April','May','June','July','August','September','October','November','December'].forEach((name,i) => { const o=node('option',name,month); o.value=String(i+1); });
   const yl = node('label', 'Year: ', panel), year = node('input', undefined, yl);
@@ -109,9 +109,15 @@
       check();
       const counts=summarizeStatuses(matched,si);
       const summaryText=`Sent: ${counts.Sent.toLocaleString()} | Viewed: ${counts.Viewed.toLocaleString()} | Acknowledged: ${counts.Acknowledged.toLocaleString()}${counts.Other ? ` | Other/unknown: ${counts.Other.toLocaleString()}` : ''} | Total: ${matched.length.toLocaleString()}`;
-      const doc=report.document;doc.title=`Disclosure History ${period}`;doc.body.replaceChildren();
+      const doc=report.document;
+      // Static skeleton only; all record data is inserted below with textContent.
+      doc.open();
+      doc.write('<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Disclosure History</title></head><body></body></html>');
+      doc.close();
+      if(doc.compatMode!=='CSS1Compat')throw Error('Could not initialize the report in standards mode.');
+      doc.title=`Disclosure History ${period}`;
       const add=(tag,text,parent=doc.body)=>{const el=doc.createElement(tag);if(text!==undefined)el.textContent=text;parent.append(el);return el;};
-      add('style','@page{size:landscape;margin:10mm}body{font:10px Arial,sans-serif;color:#111;margin:20px}h1{font-size:20px}p{line-height:1.5}button{padding:9px;margin:0 8px 14px 0}table{width:100%;border-collapse:collapse;table-layout:fixed}th,td{border:1px solid #ccc;padding:5px;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#eee}th:nth-child(3){width:23%}thead{display:table-header-group}tr{break-inside:avoid;page-break-inside:avoid}.status-summary{border:1px solid #9aaabc;background:#f3f6fa;padding:10px;margin:12px 0;break-inside:avoid;font-size:12px}.status-summary h2{font-size:14px;margin:0 0 6px}.status-summary p{margin:5px 0}@media print{.toolbar{display:none}body{margin:0}}',doc.head);
+      add('style','@page{size:landscape;margin:10mm}body{font:10px Arial,sans-serif;color:#111;margin:20px}h1{font-size:20px}p{line-height:1.5}button{padding:9px;margin:0 8px 14px 0}table.disclosure-details{width:100%;border-collapse:collapse;table-layout:fixed;font-family:Arial,sans-serif;font-size:10px;line-height:1.15}table.disclosure-details th,table.disclosure-details td{font-family:Arial,sans-serif;font-size:10px;line-height:1.15;border:1px solid #ccc;padding:3px 4px;text-align:left;vertical-align:top;overflow-wrap:anywhere}table.disclosure-details th{background:#eee}table.disclosure-details th:nth-child(3){width:23%}table.disclosure-details thead{display:table-header-group}table.disclosure-details tr{break-inside:avoid;page-break-inside:avoid}.status-summary{border:1px solid #9aaabc;background:#f3f6fa;padding:10px;margin:12px 0;break-inside:avoid;font-size:12px}.status-summary h2{font-size:14px;margin:0 0 6px}.status-summary p{margin:5px 0}@media print{.toolbar{display:none}body{margin:0}}',doc.head);
       const bar=add('div');bar.className='toolbar';
       add('button','Save / Print PDF',bar).onclick=()=>report.print();
       const download=(rows,name)=>{
@@ -131,7 +137,8 @@
       add('p','Selected by displayed sent calendar date; all statuses included; current application filters apply. Locally generated report, not a vendor-certified export or underlying disclosure documents.');
       if(unknown.length)add('p','WARNING: Undated records cannot be assigned to a month. Review the separate undated CSV; monthly completeness is not verified.');
       if(!matched.length)add('p','No dated records matched this month.');
-      const table=add('table'),head=add('thead',undefined,table),hr=add('tr',undefined,head),body=add('tbody',undefined,table);
+      const table=add('table');table.className='disclosure-details';
+      const head=add('thead',undefined,table),hr=add('tr',undefined,head),body=add('tbody',undefined,table);
       headers.forEach(h=>add('th',h,hr));matched.forEach(row=>{const tr=add('tr',undefined,body);row.forEach(c=>add('td',c,tr));});
       status.textContent+= '\nComplete. '+summaryText+'\nUse the separate report window to save PDF or CSV. Keep this source tab open until downloads finish.';
     }catch(error){status.textContent=error.message;if(report&&!report.closed)report.document.body.textContent='Export stopped: '+error.message+' No completed report generated.';}
