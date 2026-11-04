@@ -16,15 +16,21 @@ Open File Explorer and find the ZIP, usually in Downloads. Right-click the ZIP a
 
 ![Step 2: Extract All](images/02-extract-all.png)
 
-## 3. Choose a permanent home
+## 3. Leave the default location and click Extract
 
-Choose a folder you will keep. The illustrated destination C:\BrowserExtensions\disclosure-history-exporter is an example that may or may not work for your system depending on access and permissions; IT may recommend another location. Click Extract. Do not delete or move the extracted files after installation.
+Leave the destination Windows has filled in; you do not need to browse for another folder or type a new location. This will usually create an extracted folder beside the ZIP, often in Downloads. Keep Show extracted files when complete checked, then click Extract.
+
+The screenshot uses an example path. You do not need to copy it or make your destination match the picture.
+
+Keep the extracted folder where it is after installation, even if it is in Downloads. Do not delete, rename, or move it when cleaning up downloads. If your computer automatically clears Downloads, ask IT where to keep the folder before installing. The downloaded ZIP is separate from the extracted folder.
 
 ![Step 3: Extraction destination](images/03-extract-destination.png)
 
 ## 4. Find the correct folder
 
-Open the extracted repository folder, then extension. You should see manifest.json, background, content, and prepare. Windows may hide the .js endings. Do not open or edit these files.
+Windows should open the extracted files in a new File Explorer window. Look for the folder called extension and open it. If you first see another folder named disclosure-history-exporter-main, open that folder to find extension. If the window does not open automatically, return to the location used in Step 3, usually Downloads, and open the extracted folder rather than the ZIP.
+
+Inside extension, you should see manifest.json, background, content, and prepare. Windows may hide the .js endings. Do not open or edit these files. Keep this File Explorer window open so you can find the same location in Step 7.
 
 ![Step 4: Extension files](images/04-extension-files.png)
 
@@ -40,9 +46,9 @@ Click Load unpacked, not Pack extension. A folder-selection window opens.
 
 ![Step 6: Load unpacked](images/06-load-unpacked.png)
 
-## 7. Open the extension folder in the picker
+## 7. Open the same extracted folder
 
-Browse to the extracted files. Open the repository folder, then double-click extension. Do not select the parent repository folder.
+In the folder-selection window, go back to the location used in Step 3, usually Downloads. Open the extracted disclosure-history-exporter-main folder, not the ZIP. If another folder with the same name is inside it, open that too. Then double-click extension: it is the same folder you checked in Step 4. Do not select the parent repository folder.
 
 ![Step 7: Open extension folder](images/07-open-folder.png)
 
@@ -87,4 +93,4 @@ The summary counts each included record once using its displayed status when col
 
 ## Updating an existing installation
 
-Unpacked extensions do not automatically update from GitHub. Ask IT to replace the files in the same permanent installation folder. Open edge://extensions and click Reload on Disclosure History Exporter, then refresh the disclosure webpage. You normally do not need to remove and reinstall. Keep the installed folder in place.
+Unpacked extensions do not automatically update from GitHub. Ask IT to replace the files in the same extracted folder used for installation. Open edge://extensions and click Reload on Disclosure History Exporter, then refresh the disclosure webpage. You normally do not need to remove and reinstall. Keep the installed folder in place, including when cleaning up Downloads.
