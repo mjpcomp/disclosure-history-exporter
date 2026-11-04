@@ -1,26 +1,25 @@
-# Disclosure History Exporter extension - 0.1.0
+# Disclosure History Exporter extension - 0.1.1
 
-Pilot build for Microsoft Edge and Google Chrome (Manifest V3).
+Pilot for Edge and Chrome. The working console script is unchanged.
 
-## Install
-1. Extract this folder to a permanent local location.
-2. Open edge://extensions (or chrome://extensions).
-3. Enable Developer mode and choose Load unpacked.
-4. Select this folder, which contains manifest.json.
-5. Pin Disclosure History Exporter to the toolbar.
+## Installation or update
+Extract the repository to a permanent folder. Open edge://extensions (or chrome://extensions), enable Developer mode, and Load unpacked the extension folder containing manifest.json. For an existing install, replace its files, click Reload on its extension card, and refresh the history webpage. Verify version 0.1.1 on the extension card. Do not remove the extension folder. Unpacked installs do not auto-update from GitHub.
 
-## Use
-Sign into the application and open Disclosure History. Clear search and all filters, select 100 rows per page, and let loading finish. Click the extension icon, choose month/year (defaults to the previous month), and Generate report. Confirm the filter warning. Allow site pop-ups if prompted. Leave the source page alone and keep it open during collection and downloads. The exporter scans every page, regardless of sort order. Use the separate report window for Print / Save as PDF, monthly CSV, or undated CSV. Cancel aborts without producing a completed report and does not restore the original history page. Close dismisses the panel when idle. Closing the report while scanning cancels the run.
+## Prepare and run
+1. Open the signed-in Disclosure History page and clear search and all filters.
+2. Click the extension icon. A new preparation screen appears.
+3. If the page may be stale, click Refresh history and confirm. This reloads the source page and removes the panel. After loading finishes, click the extension icon again. Refresh does not preserve custom month/year selections or unsaved page state.
+4. Click Set 100 rows & open exporter. The extension changes the existing page-size control, moves to the first page, and waits for a stable table. It then opens the existing month/year exporter.
+5. Select a month and year and Generate report. Allow site pop-ups if necessary. Leave the source page alone during scanning and keep it open until report saving and downloads finish.
 
-## Privacy and limitations
-Only activeTab and scripting permissions are requested. No persistent host access, credentials, telemetry, external libraries, remote executable code, network uploads, or persistent record storage. Normal application page navigation still makes its own requests. Results are in browser memory until their tabs are closed; downloaded reports contain sensitive information and must be secured. Public code contains no customer records or organization identifiers.
+The original exporter panel still identifies its collection component as v0.1.0 and mentions manual page-size selection; the v0.1.1 preparation component has already done that step. On repeated exports with the panel still open, its icon reopens that panel rather than preparing again. Close the exporter panel to return to preparation on the next icon click.
 
-Month filtering uses displayed calendar dates. Blank and dash dates are excluded from monthly results and retained in a separate review CSV covering the full scanned history, not just the selected month. All statuses and repeated sends are retained. Unknown nonblank date formats abort the export. Search is checked; other application filters cannot reliably be detected. This is not an independent server snapshot: insertions or reordering during pagination can affect coverage even if total count is unchanged. The DOM structure is application-dependent and may require updates. Empty histories currently show a friendly error rather than an empty export.
+## Outputs and safeguards
+Print / Save as PDF and monthly CSV include the selected month using displayed calendar dates, with all statuses and repeated sends retained. Undated CSV covers excluded blank/dash-date records from the entire scanned history; it cannot assign them to a month. Unknown nonblank date formats abort. Cancel or closing the report stops collection without a completed report and does not restore the starting page.
 
-No Dev Console is needed for normal use. If injection is blocked (for example on an internal browser page), the icon shows !; open the signed-in history website and retry. After an extension update, reload it on the extensions page and refresh the history tab before running. Keep the extension directory in place. A local unpacked installation does not automatically update from GitHub.
+The count-change safeguard remains enabled. A stale page may disagree with freshly loaded pagination; refreshing and preparation can reduce that risk but cannot guarantee a snapshot. A genuine addition, deletion, or reordering during scanning can still affect coverage. Retry from a fresh page if the count changes; do not accept a partial export. Even unchanged totals do not prove completeness. Search is checked; other filters cannot reliably be detected. Empty histories currently require a nonempty-table view.
 
-## Test checklist
-- Compare the same month against the working console export (including undated exclusions).
-- Try a month with no matches, year boundary, Cancel, closing the report, repeat runs, and a wrong page.
-- Verify PDF layout and both CSV downloads. Keep the source tab open until saving is finished.
-- Test Edge first, then Chrome. Static checks do not replace live application testing.
+## Privacy and testing
+Only activeTab and scripting permissions; no permanent host access, telemetry, credentials, external libraries, remote executable code, record uploads, or persistent record storage. Normal page navigation uses the application's own network requests. Reports contain sensitive information; secure saved files. Public source contains no organization identifiers or customer records.
+
+Test automatic page-size selection starting at 10 rows and from a later page; test refresh, October comparison with the working console report, undated output, cancellation, PDF and CSV. Syntax checks are not live application tests.
