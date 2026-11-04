@@ -2,8 +2,6 @@
 
 A plain-language guide for Windows 11 and Microsoft Edge. This is a separate beginner guide; the existing technical README is not replaced.
 
-> Illustration upload pending: the instructions below are complete, but screenshot files must still be uploaded to docs/images before the images display. Only use the sanitized, annotated PNG files from the reviewed guide package, never original screenshots.
-
 You need the extension download and access to the signed-in disclosure website. No Dev Console is needed. Install only the copy approved by your IT team. Pictures are cropped and annotated real screenshots; personal details have been removed. The extraction destination is an explicitly edited example. Screen layout and version labels may differ.
 
 ## 1. Download the extension

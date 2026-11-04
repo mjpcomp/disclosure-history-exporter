@@ -1,8 +1,6 @@
 # Sanitized installation screenshots
 
-Upload only the reviewed sanitized PNGs here using GitHub's Add file > Upload files. This connector can publish text but cannot directly upload PNG/PDF binary files. Do not upload unsanitized originals, customer reports, or the private staging contents.
-
-Expected filenames:
+This folder contains the ten reviewed, cropped, and annotated PNG illustrations used by [the beginner guide](../START-HERE.md).
 
 - 01-download-zip.png
 - 02-extract-all.png
@@ -15,4 +13,4 @@ Expected filenames:
 - 09-installed.png
 - 10-toolbar-menu.png
 
-After these files are committed, remove the illustration-upload-pending notice from ../START-HERE.md. The existing guide package's PDF may be uploaded separately to docs if desired; it is not included in this text commit.
+The extraction destination is an edited example; screenshot version labels may differ from the installed release. For future replacements, remove personal paths, organization labels, unrelated tabs, and unrelated extension details before uploading. Never publish unsanitized originals or customer reports. Keep filenames stable or update the corresponding guide links.
