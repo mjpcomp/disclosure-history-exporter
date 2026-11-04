@@ -11,20 +11,32 @@
   style.textContent = ':host{all:initial}section{font:14px Arial,sans-serif;color:#17202a;background:#fff;width:330px;padding:18px;border:2px solid #2463b4;border-radius:10px;box-shadow:0 6px 30px #0005}h2{font-size:18px;margin:0 0 12px}p{line-height:1.45}label{display:block;margin:10px 0}input,select,button{font:inherit;padding:7px}input{width:90px}button{margin:5px 6px 5px 0;cursor:pointer}small{display:block;line-height:1.4}output{display:block;white-space:pre-wrap;margin-top:12px;line-height:1.5}';
   const panel = node('section', undefined, root);
   node('h2', 'Disclosure History Exporter', panel);
-  node('small', 'v0.1.0 - local processing; no uploads', panel);
+  node('small', 'v0.1.2 - local processing; no uploads', panel);
   const ml = node('label', 'Month: ', panel), month = node('select', undefined, ml);
   ['January','February','March','April','May','June','July','August','September','October','November','December'].forEach((name,i) => { const o=node('option',name,month); o.value=String(i+1); });
   const yl = node('label', 'Year: ', panel), year = node('input', undefined, yl);
   year.type='number'; year.min='1900'; year.max='9998'; year.required=true;
   const previous = new Date(); previous.setDate(1); previous.setMonth(previous.getMonth()-1);
   month.value=String(previous.getMonth()+1); year.value=String(previous.getFullYear());
-  node('p', 'Open Disclosure History, clear search/filters, and set 100 rows per page. Leave this page alone while scanning.', panel);
+  node('p', 'Clear search and filters before exporting. The preparation step sets 100 rows per page. Leave this page alone while scanning.', panel);
   const run=node('button','Generate report',panel), cancel=node('button','Cancel',panel), close=node('button','Close',panel);
   cancel.disabled=true;
   const status=node('output','Ready. Select a month and year.',panel); status.setAttribute('aria-live','polite');
   let running=false, cancelled=false;
   cancel.onclick=()=>{cancelled=true; status.textContent='Cancelling...';};
   close.onclick=()=>{if(!running){host.remove(); delete globalThis[KEY];}};
+  function summarizeStatuses(rows, index) {
+    if(index < 0) throw Error('Status column not found. Cannot produce a reliable monthly breakdown.');
+    const totals = {Sent:0, Viewed:0, Acknowledged:0, Other:0};
+    const labels = {sent:'Sent', viewed:'Viewed', acknowledged:'Acknowledged'};
+    for(const row of rows) {
+      const value = String(row[index] ?? '').trim().toLowerCase();
+      const label = Object.prototype.hasOwnProperty.call(labels,value) ? labels[value] : 'Other';
+      totals[label]++;
+    }
+    if(Object.values(totals).reduce((a,b)=>a+b,0)!==rows.length) throw Error('Status totals do not match monthly records.');
+    return totals;
+  }
   run.onclick=async()=>{
     if(running)return;
     let report;
@@ -77,6 +89,8 @@
       let page=await wait(initial.first===1?null:initial.key,1);
       const total=page.total,headers=page.headers,di=headers.indexOf('Sent Date'),matched=[],unknown=[],seen=new Set(),started=new Date().toISOString();
       if(di<0)throw Error('Sent Date column not found.');
+      const si=headers.findIndex(h=>h.trim().toLowerCase()==='status');
+      if(si<0)throw Error('Status column not found. Cannot produce a reliable monthly breakdown.');
       let scanned=0,done=false;
       for(let n=1;n<=10000;n++){
         check();
@@ -93,9 +107,11 @@
       }
       if(!done||scanned!==total)throw Error('Incomplete scan. No completed report generated.');
       check();
+      const counts=summarizeStatuses(matched,si);
+      const summaryText=`Sent: ${counts.Sent.toLocaleString()} | Viewed: ${counts.Viewed.toLocaleString()} | Acknowledged: ${counts.Acknowledged.toLocaleString()}${counts.Other ? ` | Other/unknown: ${counts.Other.toLocaleString()}` : ''} | Total: ${matched.length.toLocaleString()}`;
       const doc=report.document;doc.title=`Disclosure History ${period}`;doc.body.replaceChildren();
       const add=(tag,text,parent=doc.body)=>{const el=doc.createElement(tag);if(text!==undefined)el.textContent=text;parent.append(el);return el;};
-      add('style','@page{size:landscape;margin:10mm}body{font:10px Arial,sans-serif;color:#111;margin:20px}h1{font-size:20px}p{line-height:1.5}button{padding:9px;margin:0 8px 14px 0}table{width:100%;border-collapse:collapse;table-layout:fixed}th,td{border:1px solid #ccc;padding:5px;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#eee}th:nth-child(3){width:23%}thead{display:table-header-group}tr{break-inside:avoid;page-break-inside:avoid}@media print{.toolbar{display:none}body{margin:0}}',doc.head);
+      add('style','@page{size:landscape;margin:10mm}body{font:10px Arial,sans-serif;color:#111;margin:20px}h1{font-size:20px}p{line-height:1.5}button{padding:9px;margin:0 8px 14px 0}table{width:100%;border-collapse:collapse;table-layout:fixed}th,td{border:1px solid #ccc;padding:5px;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#eee}th:nth-child(3){width:23%}thead{display:table-header-group}tr{break-inside:avoid;page-break-inside:avoid}.status-summary{border:1px solid #9aaabc;background:#f3f6fa;padding:10px;margin:12px 0;break-inside:avoid;font-size:12px}.status-summary h2{font-size:14px;margin:0 0 6px}.status-summary p{margin:5px 0}@media print{.toolbar{display:none}body{margin:0}}',doc.head);
       const bar=add('div');bar.className='toolbar';
       add('button','Save / Print PDF',bar).onclick=()=>report.print();
       const download=(rows,name)=>{
@@ -107,13 +123,17 @@
       add('button','Download monthly CSV',bar).onclick=()=>download(matched,`disclosure-history-${period}.csv`);
       add('button','Download undated CSV',bar).onclick=()=>download(unknown,`disclosure-history-undated-review-${period}.csv`);
       add('h1',`Disclosure History - ${period}`);
+      const summary=add('section');summary.className='status-summary';
+      add('h2','Monthly status breakdown',summary);
+      add('p',summaryText,summary);
+      add('p','Counts use each included record\'s displayed status when collected, not status-change events during the month. Categories are mutually exclusive. Repeated sends count separately; these are records, not unique buyers. Undated exclusions are not included.',summary);
       add('p',`Matching records: ${matched.length}. Scanned: ${scanned} / ${total}. Undated exclusions: ${unknown.length}. Started: ${started}. Completed: ${new Date().toISOString()}.`);
       add('p','Selected by displayed sent calendar date; all statuses included; current application filters apply. Locally generated report, not a vendor-certified export or underlying disclosure documents.');
       if(unknown.length)add('p','WARNING: Undated records cannot be assigned to a month. Review the separate undated CSV; monthly completeness is not verified.');
       if(!matched.length)add('p','No dated records matched this month.');
       const table=add('table'),head=add('thead',undefined,table),hr=add('tr',undefined,head),body=add('tbody',undefined,table);
       headers.forEach(h=>add('th',h,hr));matched.forEach(row=>{const tr=add('tr',undefined,body);row.forEach(c=>add('td',c,tr));});
-      status.textContent+= '\nComplete. Use the separate report window to save PDF or CSV. Keep this source tab open until downloads finish.';
+      status.textContent+= '\nComplete. '+summaryText+'\nUse the separate report window to save PDF or CSV. Keep this source tab open until downloads finish.';
     }catch(error){status.textContent=error.message;if(report&&!report.closed)report.document.body.textContent='Export stopped: '+error.message+' No completed report generated.';}
     finally{running=false;run.disabled=false;cancel.disabled=true;close.disabled=false;month.disabled=false;year.disabled=false;}
   };
