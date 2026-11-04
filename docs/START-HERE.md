@@ -18,7 +18,7 @@ Open File Explorer and find the ZIP, usually in Downloads. Right-click the ZIP a
 
 ## 3. Choose a permanent home
 
-Choose a folder you will keep. The illustrated destination C:\BrowserExtensions\disclosure-history-exporter is an example substituted for privacy; IT may recommend another location. Click Extract. Do not delete or move the extracted files after installation.
+Choose a folder you will keep. The illustrated destination C:\BrowserExtensions\disclosure-history-exporter is an example that may or may not work for your system depending on access and permissions; IT may recommend another location. Click Extract. Do not delete or move the extracted files after installation.
 
 ![Step 3: Extraction destination](images/03-extract-destination.png)
 
@@ -48,13 +48,13 @@ Browse to the extracted files. Open the repository folder, then double-click ext
 
 ## 8. Select the folder, not a file
 
-The Folder field should say extension. The file area may appear empty or say No items match your search: this is a folder picker. Click Select Folder. If Edge reports a missing manifest, choose the extracted folder containing manifest.json.
+The Folder field should say extension. The file area may appear empty or say No items match your search: this is a folder picker. Click Select Folder. If Edge reports a missing manifest, choose the extracted folder containing manifest.json that you saw in Step 4.
 
 ![Step 8: Select Folder](images/08-select-folder.png)
 
 ## 9. Confirm installation
 
-The Extensions page should show Disclosure History Exporter with its switch on. The version in the example may differ from the current release. Installation is complete; switch to the signed-in disclosure website.
+The Extensions page should show Disclosure History Exporter with its switch on. The version in the screenshot may differ from the version you have downloaded. Installation is complete; switch to the signed-in disclosure website.
 
 ![Step 9: Installed exporter](images/09-installed.png)
 
