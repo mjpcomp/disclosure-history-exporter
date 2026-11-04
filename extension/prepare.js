@@ -1,5 +1,6 @@
 (() => {
   'use strict';
+  const VERSION=chrome.runtime.getManifest().version;
   const KEY='__disclosureExportPrepV1';
   if(globalThis.__disclosureExporterPanelV1?.isConnected){globalThis.__disclosureExporterPanelV1.scrollIntoView();return;}
   if(globalThis[KEY]?.isConnected)return;
@@ -9,7 +10,7 @@
   const add=(tag,text,parent=root)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;parent.append(e);return e;};
   add('style',':host{all:initial}section{font:14px Arial,sans-serif;background:white;color:#17202a;width:330px;border:2px solid #2463b4;border-radius:10px;padding:18px;box-shadow:0 6px 30px #0005}h2{font-size:18px;margin:0 0 12px}p,output{line-height:1.5}button{font:inherit;padding:8px;margin:5px 6px 5px 0;cursor:pointer}output{display:block;white-space:pre-wrap}');
   const box=add('section');add('h2','Prepare disclosure history',box);
-  add('p','v0.1.1: If this page has been open for a while, refresh it first. After reloading, click the extension icon again. Then prepare 100 rows and choose your export month.',box);
+  add('p',`v${VERSION}: If this page has been open for a while, refresh it first. After reloading, click the extension icon again. Then prepare 100 rows and choose your export month.`,box);
   add('p','Clear search and all filters first. Preparation navigates to the first page. Refresh is optional and does not create a server snapshot.',box);
   const refresh=add('button','Refresh history',box),open=add('button','Set 100 rows & open exporter',box),close=add('button','Close',box),status=add('output','Ready.',box);
   status.setAttribute('aria-live','polite');

@@ -1,5 +1,6 @@
 (() => {
   'use strict';
+  const VERSION=chrome.runtime.getManifest().version;
   const KEY = '__disclosureExporterPanelV1';
   if (globalThis[KEY]?.isConnected) { globalThis[KEY].scrollIntoView(); return; }
   const host = document.createElement('div');
@@ -11,7 +12,7 @@
   style.textContent = ':host{all:initial}section{font:14px Arial,sans-serif;color:#17202a;background:#fff;width:330px;padding:18px;border:2px solid #2463b4;border-radius:10px;box-shadow:0 6px 30px #0005}h2{font-size:18px;margin:0 0 12px}p{line-height:1.45}label{display:block;margin:10px 0}input,select,button{font:inherit;padding:7px}input{width:90px}button{margin:5px 6px 5px 0;cursor:pointer}small{display:block;line-height:1.4}output{display:block;white-space:pre-wrap;margin-top:12px;line-height:1.5}';
   const panel = node('section', undefined, root);
   node('h2', 'Disclosure History Exporter', panel);
-  node('small', 'v0.1.3 - local processing; no uploads', panel);
+  node('small', `v${VERSION} - local processing; no uploads`, panel);
   const ml = node('label', 'Month: ', panel), month = node('select', undefined, ml);
   ['January','February','March','April','May','June','July','August','September','October','November','December'].forEach((name,i) => { const o=node('option',name,month); o.value=String(i+1); });
   const yl = node('label', 'Year: ', panel), year = node('input', undefined, yl);
@@ -133,7 +134,7 @@
       add('h2','Monthly status breakdown',summary);
       add('p',summaryText,summary);
       add('p','Counts use each included record\'s displayed status when collected, not status-change events during the month. Categories are mutually exclusive. Repeated sends count separately; these are records, not unique buyers. Undated exclusions are not included.',summary);
-      add('p',`Matching records: ${matched.length}. Scanned: ${scanned} / ${total}. Undated exclusions: ${unknown.length}. Started: ${started}. Completed: ${new Date().toISOString()}.`);
+      add('p',`Matching records: ${matched.length}. Scanned: ${scanned} / ${total}. Undated exclusions: ${unknown.length}. Started: ${started}. Completed: ${new Date().toISOString()}. Generated with Disclosure History Exporter v${VERSION}.`);
       add('p','Selected by displayed sent calendar date; all statuses included; current application filters apply. Locally generated report, not a vendor-certified export or underlying disclosure documents.');
       if(unknown.length)add('p','WARNING: Undated records cannot be assigned to a month. Review the separate undated CSV; monthly completeness is not verified.');
       if(!matched.length)add('p','No dated records matched this month.');
